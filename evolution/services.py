@@ -2,7 +2,8 @@
 
 from datetime import date, timedelta
 
-from measurements.models import SKINFOLD_FIELDS
+from measurements.models import CIRCUMFERENCE_FIELDS, SKINFOLD_FIELDS
+from measurements.services import calculate_waist_hip_ratio
 
 STABILITY_THRESHOLDS = {
     "weight": 0.2,
@@ -102,9 +103,19 @@ def get_summary(user, *, limit=30, date_from=None, date_to=None, weeks=None, las
     return points
 
 
+def _field_diff(m_to, m_from, field, round_to=2):
+    a = _f(getattr(m_to, field))
+    b = _f(getattr(m_from, field))
+    if a is None or b is None:
+        return None
+    return round(a - b, round_to)
+
+
 def get_compare(user, measurement_a, measurement_b):
     """`measurement_a`/`measurement_b` já validados como pertencentes ao user.
-    Normaliza cronologicamente (from = mais antiga, to = mais recente)."""
+    Normaliza cronologicamente (from = mais antiga, to = mais recente).
+    Compara todos os campos disponíveis: composição, dobras cutâneas
+    (individuais + soma) e circunferências — não só peso/%gordura."""
     if measurement_a.measurement_date <= measurement_b.measurement_date:
         m_from, m_to = measurement_a, measurement_b
     else:
@@ -112,28 +123,44 @@ def get_compare(user, measurement_a, measurement_b):
 
     days = (m_to.measurement_date - m_from.measurement_date).days
 
-    bf_diff = None
-    if m_to.body_fat_percentage is not None and m_from.body_fat_percentage is not None:
-        bf_diff = round(_f(m_to.body_fat_percentage) - _f(m_from.body_fat_percentage), 2)
+    diff = {
+        "days": days,
+        "weight": _field_diff(m_to, m_from, "weight"),
+        "body_fat_percentage": _field_diff(m_to, m_from, "body_fat_percentage"),
+        "lean_mass": _field_diff(m_to, m_from, "lean_mass"),
+        "fat_mass": _field_diff(m_to, m_from, "fat_mass"),
+    }
 
-    lean_diff = None
-    if m_to.lean_mass is not None and m_from.lean_mass is not None:
-        lean_diff = round(_f(m_to.lean_mass) - _f(m_from.lean_mass), 2)
+    skinfolds = {}
+    skinfold_sum_to = skinfold_sum_from = None
+    if all(getattr(m_to, f) is not None for f in SKINFOLD_FIELDS):
+        skinfold_sum_to = sum(_f(getattr(m_to, f)) for f in SKINFOLD_FIELDS)
+    if all(getattr(m_from, f) is not None for f in SKINFOLD_FIELDS):
+        skinfold_sum_from = sum(_f(getattr(m_from, f)) for f in SKINFOLD_FIELDS)
+    for f in SKINFOLD_FIELDS:
+        skinfolds[f] = _field_diff(m_to, m_from, f)
+    skinfolds["sum"] = (
+        round(skinfold_sum_to - skinfold_sum_from, 2)
+        if skinfold_sum_to is not None and skinfold_sum_from is not None
+        else None
+    )
 
-    fat_diff = None
-    if m_to.fat_mass is not None and m_from.fat_mass is not None:
-        fat_diff = round(_f(m_to.fat_mass) - _f(m_from.fat_mass), 2)
+    circumferences = {f: _field_diff(m_to, m_from, f) for f in CIRCUMFERENCE_FIELDS}
+
+    whr_to = calculate_waist_hip_ratio(m_to.waist, m_to.hip, user.sex)
+    whr_from = calculate_waist_hip_ratio(m_from.waist, m_from.hip, user.sex)
+    circumferences["waist_hip_ratio"] = (
+        round(whr_to["value"] - whr_from["value"], 2)
+        if whr_to and whr_from
+        else None
+    )
 
     return {
         "from": m_from,
         "to": m_to,
-        "diff": {
-            "days": days,
-            "weight": round(_f(m_to.weight) - _f(m_from.weight), 2),
-            "body_fat_percentage": bf_diff,
-            "lean_mass": lean_diff,
-            "fat_mass": fat_diff,
-        },
+        "diff": diff,
+        "skinfolds": skinfolds,
+        "circumferences": circumferences,
     }
 
 

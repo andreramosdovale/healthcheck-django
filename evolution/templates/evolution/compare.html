@@ -28,7 +28,10 @@
   </c-card>
 
   {% if result %}
-    <c-card>
+    <p class="mb-4 text-sm text-muted-foreground">{{ result.diff.days }} dias entre as medições.</p>
+
+    <c-card class="mb-6">
+      <c-card.header><c-card.title>Composição corporal</c-card.title></c-card.header>
       <c-table>
         <c-table.header>
           <c-table.row>
@@ -41,8 +44,8 @@
         <tbody>
           <c-table.row>
             <c-table.cell class="font-medium">Peso</c-table.cell>
-            <c-table.cell>{{ result.from.weight }}</c-table.cell>
-            <c-table.cell>{{ result.to.weight }}</c-table.cell>
+            <c-table.cell>{{ result.from.weight }} kg</c-table.cell>
+            <c-table.cell>{{ result.to.weight }} kg</c-table.cell>
             <c-table.cell>{{ result.diff.weight }} kg</c-table.cell>
           </c-table.row>
           <c-table.row>
@@ -55,17 +58,82 @@
             <c-table.cell class="font-medium">Massa magra</c-table.cell>
             <c-table.cell>{{ result.from.lean_mass|default:"—" }}</c-table.cell>
             <c-table.cell>{{ result.to.lean_mass|default:"—" }}</c-table.cell>
-            <c-table.cell>{{ result.diff.lean_mass|default:"—" }}</c-table.cell>
+            <c-table.cell>{{ result.diff.lean_mass|default:"—" }} kg</c-table.cell>
           </c-table.row>
           <c-table.row>
             <c-table.cell class="font-medium">Massa gorda</c-table.cell>
             <c-table.cell>{{ result.from.fat_mass|default:"—" }}</c-table.cell>
             <c-table.cell>{{ result.to.fat_mass|default:"—" }}</c-table.cell>
-            <c-table.cell>{{ result.diff.fat_mass|default:"—" }}</c-table.cell>
+            <c-table.cell>{{ result.diff.fat_mass|default:"—" }} kg</c-table.cell>
+          </c-table.row>
+          <c-table.row>
+            <c-table.cell class="font-medium">Soma das dobras</c-table.cell>
+            <c-table.cell>—</c-table.cell>
+            <c-table.cell>—</c-table.cell>
+            <c-table.cell>{{ result.skinfolds.sum|default:"—" }} mm</c-table.cell>
+          </c-table.row>
+          <c-table.row>
+            <c-table.cell class="font-medium">Cintura/Quadril</c-table.cell>
+            <c-table.cell>—</c-table.cell>
+            <c-table.cell>—</c-table.cell>
+            <c-table.cell>{{ result.circumferences.waist_hip_ratio|default:"—" }}</c-table.cell>
           </c-table.row>
         </tbody>
       </c-table>
     </c-card>
-    <p class="mt-3 text-sm text-muted-foreground">{{ result.diff.days }} dias entre as medições.</p>
+
+    <c-card class="mb-6">
+      <c-card.header>
+        <c-card.title>Dobras cutâneas (mm)</c-card.title>
+        <c-card.description>Vazio quando não há dobras completas em uma das duas medições.</c-card.description>
+      </c-card.header>
+      <c-table>
+        <c-table.header>
+          <c-table.row>
+            <c-table.head></c-table.head>
+            <c-table.head>{{ result.from.measurement_date }}</c-table.head>
+            <c-table.head>{{ result.to.measurement_date }}</c-table.head>
+            <c-table.head>Diferença</c-table.head>
+          </c-table.row>
+        </c-table.header>
+        <tbody>
+          {% for row in skinfold_rows %}
+            <c-table.row>
+              <c-table.cell class="font-medium">{{ row.label }}</c-table.cell>
+              <c-table.cell>{{ row.from|default:"—" }}</c-table.cell>
+              <c-table.cell>{{ row.to|default:"—" }}</c-table.cell>
+              <c-table.cell>{{ row.diff|default:"—" }}</c-table.cell>
+            </c-table.row>
+          {% endfor %}
+        </tbody>
+      </c-table>
+    </c-card>
+
+    <c-card>
+      <c-card.header>
+        <c-card.title>Circunferências (cm)</c-card.title>
+        <c-card.description>Só aparece diferença quando o campo foi preenchido nas duas medições.</c-card.description>
+      </c-card.header>
+      <c-table>
+        <c-table.header>
+          <c-table.row>
+            <c-table.head></c-table.head>
+            <c-table.head>{{ result.from.measurement_date }}</c-table.head>
+            <c-table.head>{{ result.to.measurement_date }}</c-table.head>
+            <c-table.head>Diferença</c-table.head>
+          </c-table.row>
+        </c-table.header>
+        <tbody>
+          {% for row in circumference_rows %}
+            <c-table.row>
+              <c-table.cell class="font-medium">{{ row.label }}</c-table.cell>
+              <c-table.cell>{{ row.from|default:"—" }}</c-table.cell>
+              <c-table.cell>{{ row.to|default:"—" }}</c-table.cell>
+              <c-table.cell>{{ row.diff|default:"—" }}</c-table.cell>
+            </c-table.row>
+          {% endfor %}
+        </tbody>
+      </c-table>
+    </c-card>
   {% endif %}
 {% endblock %}

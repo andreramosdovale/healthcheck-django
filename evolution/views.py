@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render
 
-from measurements.models import Measurement
+from measurements.models import CIRCUMFERENCE_FIELDS, CIRCUMFERENCE_LABELS, Measurement, SKINFOLD_FIELDS, SKINFOLD_LABELS
 
 from . import services
 
@@ -68,16 +68,44 @@ def compare_view(request):
     from_id = request.GET.get("from")
     to_id = request.GET.get("to")
     result = None
+    skinfold_rows = []
+    circumference_rows = []
     if from_id and to_id:
         m_from = get_object_or_404(Measurement, pk=from_id, user=request.user)
         m_to = get_object_or_404(Measurement, pk=to_id, user=request.user)
         result = services.get_compare(request.user, m_from, m_to)
 
+        skinfold_rows = [
+            {
+                "label": SKINFOLD_LABELS[f],
+                "from": getattr(m_from, f),
+                "to": getattr(m_to, f),
+                "diff": result["skinfolds"][f],
+            }
+            for f in SKINFOLD_FIELDS
+        ]
+        circumference_rows = [
+            {
+                "label": CIRCUMFERENCE_LABELS[f],
+                "from": getattr(m_from, f),
+                "to": getattr(m_to, f),
+                "diff": result["circumferences"][f],
+            }
+            for f in CIRCUMFERENCE_FIELDS
+        ]
+
     measurements = request.user.measurements.order_by("-measurement_date")
     return render(
         request,
         "evolution/compare.html",
-        {"measurements": measurements, "result": result, "from_id": from_id, "to_id": to_id},
+        {
+            "measurements": measurements,
+            "result": result,
+            "from_id": from_id,
+            "to_id": to_id,
+            "skinfold_rows": skinfold_rows,
+            "circumference_rows": circumference_rows,
+        },
     )
 
 

@@ -1,17 +1,11 @@
 # healthcheck-django
 
-Monolito Django que substitui `healthcheck-api` (NestJS) e `healthcheck-app`
-(Expo/React Native). Ver `../specs/` para a estratégia completa de migração e
-os prompts de cada etapa.
+Monolito Django para acompanhar composição corporal ao longo do tempo:
+medições (peso, dobras cutâneas, circunferências), cálculo automático de
+%gordura e gráficos de evolução/progresso.
 
 **Projeto local, uso pessoal**: banco **SQLite** (`db.sqlite3`, arquivo
-único, sem Docker/Postgres), sem deploy configurado. Tabelas 100% no padrão
-Django (`accounts_user`, `measurements_measurement`, etc. — sem prefixos
-customizados).
-
-Status: **Prompts 1 a 5 concluídos**, simplificado depois para SQLite local
-(sem Postgres, sem Docker, sem migração de dados do backend antigo — este
-projeto não compartilha mais banco com `healthcheck-api`).
+único, sem Docker/Postgres), sem deploy configurado.
 
 - Auth: model `User` customizado (`accounts.User`), login por email OU
   nickname (`accounts/backends.py`), senha complexa
@@ -24,8 +18,8 @@ projeto não compartilha mais banco com `healthcheck-api`).
   (componentes shadcn/ui portados para Django via
   [django-cotton](https://django-cotton.com)) + Tailwind CSS v4 rodando via
   [django-tailwind-cli](https://django-tailwind-cli.readthedocs.io) (binário
-  standalone, **sem Node.js**). Paleta reaproveitada do app mobile
-  (`healthcheck-app`, emerald/gray) — ver `src/styles/source.css`.
+  standalone, **sem Node.js**). Paleta emerald/gray — ver
+  `src/styles/source.css`.
 
 ## Setup
 

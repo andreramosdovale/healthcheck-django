@@ -31,6 +31,33 @@ CIRCUMFERENCE_FIELDS = [
     "right_bicep_flexed",
 ]
 
+SKINFOLD_LABELS = {
+    "triceps": "Tríceps",
+    "subscapular": "Subescapular",
+    "chest": "Tórax",
+    "midaxillary": "Axilar média",
+    "suprailiac": "Suprailíaca",
+    "abdominal": "Abdominal",
+    "thigh": "Coxa",
+}
+
+CIRCUMFERENCE_LABELS = {
+    "neck": "Pescoço",
+    "waist": "Cintura",
+    "abdomen": "Abdômen",
+    "hip": "Quadril",
+    "shoulders": "Ombro",
+    "chest_circ": "Tórax",
+    "left_thigh": "Coxa esquerda",
+    "right_thigh": "Coxa direita",
+    "left_calf": "Panturrilha esquerda",
+    "right_calf": "Panturrilha direita",
+    "left_bicep_relaxed": "Braço relaxado esquerdo",
+    "right_bicep_relaxed": "Braço relaxado direito",
+    "left_bicep_flexed": "Braço contraído esquerdo",
+    "right_bicep_flexed": "Braço contraído direito",
+}
+
 
 def skinfold_field(**kwargs):
     return models.DecimalField(

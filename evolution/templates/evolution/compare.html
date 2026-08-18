@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Comparar medições{% endblock %}
+{% block content %}
+  <h1 class="mb-6 text-2xl font-semibold">Comparar medições</h1>
+
+  <c-card class="mb-6">
+    <c-card.content class="pt-6">
+      <form method="get" class="flex flex-wrap items-end gap-4">
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium">De</label>
+          <select name="from" class="flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs">
+            {% for m in measurements %}
+              <option value="{{ m.pk }}" {% if from_id == m.pk|stringformat:"s" %}selected{% endif %}>{{ m.measurement_date }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium">Para</label>
+          <select name="to" class="flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs">
+            {% for m in measurements %}
+              <option value="{{ m.pk }}" {% if to_id == m.pk|stringformat:"s" %}selected{% endif %}>{{ m.measurement_date }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <c-button type="submit">Comparar</c-button>
+      </form>
+    </c-card.content>
+  </c-card>
+
+  {% if result %}
+    <c-card>
+      <c-table>
+        <c-table.header>
+          <c-table.row>
+            <c-table.head></c-table.head>
+            <c-table.head>{{ result.from.measurement_date }}</c-table.head>
+            <c-table.head>{{ result.to.measurement_date }}</c-table.head>
+            <c-table.head>Diferença</c-table.head>
+          </c-table.row>
+        </c-table.header>
+        <tbody>
+          <c-table.row>
+            <c-table.cell class="font-medium">Peso</c-table.cell>
+            <c-table.cell>{{ result.from.weight }}</c-table.cell>
+            <c-table.cell>{{ result.to.weight }}</c-table.cell>
+            <c-table.cell>{{ result.diff.weight }} kg</c-table.cell>
+          </c-table.row>
+          <c-table.row>
+            <c-table.cell class="font-medium">% Gordura</c-table.cell>
+            <c-table.cell>{{ result.from.body_fat_percentage|default:"—" }}</c-table.cell>
+            <c-table.cell>{{ result.to.body_fat_percentage|default:"—" }}</c-table.cell>
+            <c-table.cell>{{ result.diff.body_fat_percentage|default:"—" }}</c-table.cell>
+          </c-table.row>
+          <c-table.row>
+            <c-table.cell class="font-medium">Massa magra</c-table.cell>
+            <c-table.cell>{{ result.from.lean_mass|default:"—" }}</c-table.cell>
+            <c-table.cell>{{ result.to.lean_mass|default:"—" }}</c-table.cell>
+            <c-table.cell>{{ result.diff.lean_mass|default:"—" }}</c-table.cell>
+          </c-table.row>
+          <c-table.row>
+            <c-table.cell class="font-medium">Massa gorda</c-table.cell>
+            <c-table.cell>{{ result.from.fat_mass|default:"—" }}</c-table.cell>
+            <c-table.cell>{{ result.to.fat_mass|default:"—" }}</c-table.cell>
+            <c-table.cell>{{ result.diff.fat_mass|default:"—" }}</c-table.cell>
+          </c-table.row>
+        </tbody>
+      </c-table>
+    </c-card>
+    <p class="mt-3 text-sm text-muted-foreground">{{ result.diff.days }} dias entre as medições.</p>
+  {% endif %}
+{% endblock %}

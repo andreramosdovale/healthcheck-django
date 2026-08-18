@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}HealthCheck — acompanhe sua composição corporal{% endblock %}
+{% block content %}
+  <section class="flex flex-col items-center gap-6 py-12 text-center">
+    <c-badge variant="secondary">Acompanhamento pessoal de composição corporal</c-badge>
+    <h1 class="max-w-2xl text-4xl font-bold tracking-tight sm:text-5xl">
+      Registre suas medições. <span class="text-primary">Veja sua evolução.</span>
+    </h1>
+    <p class="max-w-xl text-muted-foreground">
+      Peso, dobras cutâneas, circunferências e % de gordura calculado
+      automaticamente (Pollock 7-dobras / Navy) — tudo num só lugar, com
+      gráficos de progresso ao longo do tempo.
+    </p>
+    <div class="flex gap-3">
+      <a href="{% url 'accounts:register' %}"><c-button size="lg">Criar conta</c-button></a>
+      <a href="{% url 'accounts:login' %}"><c-button size="lg" variant="outline">Entrar</c-button></a>
+    </div>
+  </section>
+
+  <section class="grid grid-cols-1 gap-6 py-8 sm:grid-cols-3">
+    <c-card>
+      <c-card.header>
+        <c-card.title>Medições completas</c-card.title>
+        <c-card.description>
+          Peso, 7 dobras cutâneas e 13 circunferências — com validação e
+          cálculo automático de massa magra/gorda.
+        </c-card.description>
+      </c-card.header>
+    </c-card>
+    <c-card>
+      <c-card.header>
+        <c-card.title>% de gordura preciso</c-card.title>
+        <c-card.description>
+          Pollock 7-dobras quando possível, com fallback para o método Navy —
+          sempre a fórmula mais precisa disponível pros seus dados.
+        </c-card.description>
+      </c-card.header>
+    </c-card>
+    <c-card>
+      <c-card.header>
+        <c-card.title>Evolução visual</c-card.title>
+        <c-card.description>
+          Gráficos de peso, % de gordura e composição corporal, comparação
+          entre duas medições e tendência automática.
+        </c-card.description>
+      </c-card.header>
+    </c-card>
+  </section>
+{% endblock %}

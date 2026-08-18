@@ -1,0 +1,94 @@
+<div class="rounded-lg border border-border bg-card p-3">
+  <canvas id="weightChart" height="200"></canvas>
+</div>
+<div class="rounded-lg border border-border bg-card p-3">
+  <canvas id="bodyFatChart" height="200"></canvas>
+</div>
+<div class="rounded-lg border border-border bg-card p-3">
+  <canvas id="compositionChart" height="200"></canvas>
+</div>
+<div class="rounded-lg border border-border bg-card p-3">
+  <canvas id="whrChart" height="200"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+  (function () {
+    const dates = {{ dates|safe }};
+    const weights = {{ weights|safe }};
+    const bodyFat = {{ body_fat|safe }};
+    const leanMass = {{ lean_mass|safe }};
+    const fatMass = {{ fat_mass|safe }};
+    const whr = {{ whr|safe }};
+
+    const COLORS = {
+      primary: "#059669",
+      primaryFill: "rgba(5, 150, 105, 0.15)",
+      accent: "#8B5CF6",
+      accentFill: "rgba(139, 92, 246, 0.5)",
+      indigo: "#6366F1",
+      grid: "#E5E7EB",
+      text: "#6B7280",
+    };
+
+    Chart.defaults.color = COLORS.text;
+    Chart.defaults.borderColor = COLORS.grid;
+    Chart.defaults.font.family = "ui-sans-serif, system-ui, sans-serif";
+
+    ["weightChart", "bodyFatChart", "compositionChart", "whrChart"].forEach((id) => {
+      const existing = Chart.getChart(id);
+      if (existing) existing.destroy();
+    });
+
+    new Chart(document.getElementById("weightChart"), {
+      type: "line",
+      data: {
+        labels: dates,
+        datasets: [{
+          label: "Peso (kg)", data: weights,
+          borderColor: COLORS.primary, backgroundColor: COLORS.primaryFill,
+          tension: 0.3, fill: true,
+        }],
+      },
+      options: { plugins: { title: { display: true, text: "Peso" } } },
+    });
+
+    new Chart(document.getElementById("bodyFatChart"), {
+      type: "line",
+      data: {
+        labels: dates,
+        datasets: [{
+          label: "% Gordura", data: bodyFat,
+          borderColor: COLORS.accent, backgroundColor: COLORS.accentFill,
+          tension: 0.3, fill: true,
+        }],
+      },
+      options: { plugins: { title: { display: true, text: "% Gordura corporal" } } },
+    });
+
+    new Chart(document.getElementById("compositionChart"), {
+      type: "bar",
+      data: {
+        labels: dates,
+        datasets: [
+          { label: "Massa magra (kg)", data: leanMass, backgroundColor: COLORS.primary, stack: "composition" },
+          { label: "Massa gorda (kg)", data: fatMass, backgroundColor: COLORS.accent, stack: "composition" },
+        ],
+      },
+      options: { plugins: { title: { display: true, text: "Composição corporal" } } },
+    });
+
+    new Chart(document.getElementById("whrChart"), {
+      type: "line",
+      data: {
+        labels: dates,
+        datasets: [{
+          label: "Cintura/Quadril", data: whr,
+          borderColor: COLORS.indigo, backgroundColor: "rgba(99, 102, 241, 0.15)",
+          tension: 0.3, fill: true,
+        }],
+      },
+      options: { plugins: { title: { display: true, text: "Relação cintura-quadril" } } },
+    });
+  })();
+</script>

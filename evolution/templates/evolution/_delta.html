@@ -1,0 +1,51 @@
+{% if result.delta is None %}
+  <p class="text-sm text-muted-foreground">Primeira medição — sem comparação anterior.</p>
+{% else %}
+  <ul class="flex flex-col gap-2 text-sm">
+    <li class="flex items-center justify-between">
+      <span class="text-muted-foreground">Composição geral</span>
+      {% with v=result.delta.composition_balance %}
+        {% if v == "up" %}<c-badge class="bg-success text-success-foreground">↑ melhorando</c-badge>
+        {% elif v == "down" %}<c-badge variant="destructive">↓ piorando</c-badge>
+        {% elif v == "stable" %}<c-badge variant="secondary">→ estável</c-badge>
+        {% else %}<span class="text-muted-foreground">—</span>{% endif %}
+      {% endwith %}
+    </li>
+    <li class="flex items-center justify-between">
+      <span class="text-muted-foreground">Peso</span>
+      {% with v=result.delta.weight %}
+        {% if v == "up" %}<c-badge variant="secondary">↑</c-badge>
+        {% elif v == "down" %}<c-badge variant="secondary">↓</c-badge>
+        {% elif v == "stable" %}<c-badge variant="secondary">→</c-badge>
+        {% else %}<span class="text-muted-foreground">—</span>{% endif %}
+      {% endwith %}
+    </li>
+    <li class="flex items-center justify-between">
+      <span class="text-muted-foreground">% Gordura</span>
+      {% with v=result.delta.body_fat_percentage %}
+        {% if v == "up" %}<c-badge variant="destructive">↑</c-badge>
+        {% elif v == "down" %}<c-badge class="bg-success text-success-foreground">↓</c-badge>
+        {% elif v == "stable" %}<c-badge variant="secondary">→</c-badge>
+        {% else %}<span class="text-muted-foreground">—</span>{% endif %}
+      {% endwith %}
+    </li>
+    <li class="flex items-center justify-between">
+      <span class="text-muted-foreground">Massa magra</span>
+      {% with v=result.delta.lean_mass %}
+        {% if v == "up" %}<c-badge class="bg-success text-success-foreground">↑</c-badge>
+        {% elif v == "down" %}<c-badge variant="destructive">↓</c-badge>
+        {% elif v == "stable" %}<c-badge variant="secondary">→</c-badge>
+        {% else %}<span class="text-muted-foreground">—</span>{% endif %}
+      {% endwith %}
+    </li>
+    <li class="flex items-center justify-between">
+      <span class="text-muted-foreground">Massa gorda</span>
+      {% with v=result.delta.fat_mass %}
+        {% if v == "up" %}<c-badge variant="destructive">↑</c-badge>
+        {% elif v == "down" %}<c-badge class="bg-success text-success-foreground">↓</c-badge>
+        {% elif v == "stable" %}<c-badge variant="secondary">→</c-badge>
+        {% else %}<span class="text-muted-foreground">—</span>{% endif %}
+      {% endwith %}
+    </li>
+  </ul>
+{% endif %}

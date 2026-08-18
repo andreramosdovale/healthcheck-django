@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}{% if mode == "create" %}Nova medição{% else %}Editar medição{% endif %}{% endblock %}
+{% block content %}
+  <h1 class="mb-6 text-2xl font-semibold">{% if mode == "create" %}Nova medição{% else %}Editar medição{% endif %}</h1>
+
+  <form method="post" novalidate class="flex flex-col gap-6">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <c-alert variant="destructive">
+        <c-alert.description>{{ form.non_field_errors|join:" " }}</c-alert.description>
+      </c-alert>
+    {% endif %}
+
+    <c-card>
+      <c-card.header><c-card.title>Básico</c-card.title></c-card.header>
+      <c-card.content class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="flex flex-col gap-1.5">
+          <label for="{{ form.measurement_date.id_for_label }}" class="text-sm font-medium">{{ form.measurement_date.label }}</label>
+          {{ form.measurement_date }}
+          {% if form.measurement_date.errors %}<p class="text-sm text-destructive">{{ form.measurement_date.errors|join:" " }}</p>{% endif %}
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label for="{{ form.weight.id_for_label }}" class="text-sm font-medium">{{ form.weight.label }} (kg)</label>
+          {{ form.weight }}
+          {% if form.weight.errors %}<p class="text-sm text-destructive">{{ form.weight.errors|join:" " }}</p>{% endif %}
+        </div>
+      </c-card.content>
+    </c-card>
+
+    <c-card>
+      <c-card.header>
+        <c-card.title>Dobras cutâneas (mm)</c-card.title>
+        <c-card.description>Todas ou nenhuma — se preencher uma, as 7 são obrigatórias.</c-card.description>
+      </c-card.header>
+      <c-card.content class="grid grid-cols-2 gap-4 sm:grid-cols-3">
+        <div class="flex flex-col gap-1.5"><label class="text-sm font-medium">{{ form.triceps.label }}</label>{{ form.triceps }}</div>
+        <div class="flex flex-col gap-1.5"><label class="text-sm font-medium">{{ form.subscapular.label }}</label>{{ form.subscapular }}</div>
+        <div class="flex flex-col gap-1.5"><label class="text-sm font-medium">{{ form.chest.label }}</label>{{ form.chest }}</div>
+        <div class="flex flex-col gap-1.5"><label class="text-sm font-medium">{{ form.midaxillary.label }}</label>{{ form.midaxillary }}</div>
+        <div class="flex flex-col gap-1.5"><label class="text-sm font-medium">{{ form.suprailiac.label }}</label>{{ form.suprailiac }}</div>
+        <div class="flex flex-col gap-1.5"><label class="text-sm font-medium">{{ form.abdominal.label }}</label>{{ form.abdominal }}</div>
+        <div class="flex flex-col gap-1.5"><label class="text-sm font-medium">{{ form.thigh.label }}</label>{{ form.thigh }}</div>
+      </c-card.content>
+    </c-card>
+
+    <c-card>
+      <c-card.header><c-card.title>Circunferências (cm)</c-card.title></c-card.header>
+      <c-card.content class="grid grid-cols-2 gap-4 sm:grid-cols-3">
+        <div class="flex flex-col gap-1.5"><label class="text-sm font-medium">{{ form.neck.label }}</label>{{ form.neck }}</div>
+        <div class="flex flex-col gap-1.5"><label class="text-sm font-medium">{{ form.waist.label }}</label>{{ form.waist }}</div>
+        <div class="flex flex-col gap-1.5"><label class="text-sm font-medium">{{ form.abdomen.label }}</label>{{ form.abdomen }}</div>
+        <div class="flex flex-col gap-1.5"><label class="text-sm font-medium">{{ form.hip.label }}</label>{{ form.hip }}</div>
+        <div class="flex flex-col gap-1.5"><label class="text-sm font-medium">{{ form.shoulders.label }}</label>{{ form.shoulders }}</div>
+        <div class="flex flex-col gap-1.5"><label class="text-sm font-medium">{{ form.chest_circ.label }}</label>{{ form.chest_circ }}</div>
+        <div class="flex flex-col gap-1.5"><label class="text-sm font-medium">{{ form.left_thigh.label }}</label>{{ form.left_thigh }}</div>
+        <div class="flex flex-col gap-1.5"><label class="text-sm font-medium">{{ form.right_thigh.label }}</label>{{ form.right_thigh }}</div>
+        <div class="flex flex-col gap-1.5"><label class="text-sm font-medium">{{ form.left_calf.label }}</label>{{ form.left_calf }}</div>
+        <div class="flex flex-col gap-1.5"><label class="text-sm font-medium">{{ form.right_calf.label }}</label>{{ form.right_calf }}</div>
+        <div class="flex flex-col gap-1.5"><label class="text-sm font-medium">{{ form.left_bicep_relaxed.label }}</label>{{ form.left_bicep_relaxed }}</div>
+        <div class="flex flex-col gap-1.5"><label class="text-sm font-medium">{{ form.right_bicep_relaxed.label }}</label>{{ form.right_bicep_relaxed }}</div>
+        <div class="flex flex-col gap-1.5"><label class="text-sm font-medium">{{ form.left_bicep_flexed.label }}</label>{{ form.left_bicep_flexed }}</div>
+        <div class="flex flex-col gap-1.5"><label class="text-sm font-medium">{{ form.right_bicep_flexed.label }}</label>{{ form.right_bicep_flexed }}</div>
+      </c-card.content>
+    </c-card>
+
+    <div class="flex justify-end gap-3">
+      {% if mode == "edit" %}
+        <a href="{% url 'measurements:detail' measurement.pk %}"><c-button type="button" variant="outline">Cancelar</c-button></a>
+      {% endif %}
+      <c-button type="submit">Salvar</c-button>
+    </div>
+  </form>
+{% endblock %}

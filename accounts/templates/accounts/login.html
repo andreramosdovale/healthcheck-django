@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Entrar{% endblock %}
+{% block content %}
+  <div class="mx-auto max-w-sm">
+    <c-card>
+      <c-card.header>
+        <c-card.title>Entrar</c-card.title>
+        <c-card.description>Acesse com seu email ou nickname.</c-card.description>
+      </c-card.header>
+      <c-card.content>
+        <form method="post" novalidate class="flex flex-col gap-4">
+          {% csrf_token %}
+          {% if form.non_field_errors %}
+            <c-alert variant="destructive">
+              <c-alert.description>{{ form.non_field_errors|join:" " }}</c-alert.description>
+            </c-alert>
+          {% endif %}
+          <div class="flex flex-col gap-1.5">
+            <label for="{{ form.login.id_for_label }}" class="text-sm font-medium">{{ form.login.label }}</label>
+            {{ form.login }}
+            {% if form.login.errors %}<p class="text-sm text-destructive">{{ form.login.errors|join:" " }}</p>{% endif %}
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <label for="{{ form.password.id_for_label }}" class="text-sm font-medium">{{ form.password.label }}</label>
+            {{ form.password }}
+            {% if form.password.errors %}<p class="text-sm text-destructive">{{ form.password.errors|join:" " }}</p>{% endif %}
+          </div>
+          <c-button type="submit" class="w-full">Entrar</c-button>
+        </form>
+      </c-card.content>
+      <c-card.footer>
+        <p class="text-sm text-muted-foreground">Não tem conta? <a href="{% url 'accounts:register' %}" class="text-primary hover:underline">Criar conta</a></p>
+      </c-card.footer>
+    </c-card>
+  </div>
+{% endblock %}

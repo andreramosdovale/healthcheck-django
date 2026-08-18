@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Perfil{% endblock %}
+{% block content %}
+  <div class="mx-auto max-w-lg">
+    <c-card>
+      <c-card.header>
+        <c-card.title>Perfil</c-card.title>
+        <c-badge variant="secondary" class="w-fit">{{ profile_user.get_plan_display }}</c-badge>
+      </c-card.header>
+      <c-card.content>
+        <dl class="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+          <dt class="text-muted-foreground">Nome</dt><dd>{{ profile_user.name }}</dd>
+          <dt class="text-muted-foreground">Nickname</dt><dd>{{ profile_user.nickname }}</dd>
+          <dt class="text-muted-foreground">Email</dt><dd>{{ profile_user.email }}</dd>
+          <dt class="text-muted-foreground">Altura</dt><dd>{{ profile_user.height }} cm</dd>
+        </dl>
+      </c-card.content>
+      <c-card.footer>
+        <a href="{% url 'accounts:profile_edit' %}"><c-button variant="outline">Editar perfil</c-button></a>
+      </c-card.footer>
+    </c-card>
+  </div>
+{% endblock %}

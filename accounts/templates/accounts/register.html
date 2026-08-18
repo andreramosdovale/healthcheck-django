@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Criar conta{% endblock %}
+{% block content %}
+  <div class="mx-auto max-w-lg">
+    <c-card>
+      <c-card.header>
+        <c-card.title>Criar conta</c-card.title>
+        <c-card.description>Preencha seus dados para começar a registrar suas medições.</c-card.description>
+      </c-card.header>
+      <c-card.content>
+        <form method="post" novalidate class="flex flex-col gap-4">
+          {% csrf_token %}
+          {% if form.non_field_errors %}
+            <c-alert variant="destructive">
+              <c-alert.description>{{ form.non_field_errors|join:" " }}</c-alert.description>
+            </c-alert>
+          {% endif %}
+          {% for field in form %}
+            {% if field.name == "terms_accepted" %}
+              <div class="flex items-center gap-2">
+                {{ field }}
+                <label for="{{ field.id_for_label }}" class="text-sm font-medium">{{ field.label }}</label>
+              </div>
+            {% else %}
+              <div class="flex flex-col gap-1.5">
+                <label for="{{ field.id_for_label }}" class="text-sm font-medium">{{ field.label }}</label>
+                {{ field }}
+              </div>
+            {% endif %}
+            {% if field.errors %}<p class="text-sm text-destructive">{{ field.errors|join:" " }}</p>{% endif %}
+          {% endfor %}
+          <c-button type="submit" class="w-full">Criar conta</c-button>
+        </form>
+      </c-card.content>
+      <c-card.footer>
+        <p class="text-sm text-muted-foreground">Já tem conta? <a href="{% url 'accounts:login' %}" class="text-primary hover:underline">Entrar</a></p>
+      </c-card.footer>
+    </c-card>
+  </div>
+{% endblock %}

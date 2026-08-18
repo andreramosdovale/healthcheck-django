@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Medições{% endblock %}
+{% block content %}
+  <div class="mb-6 flex items-center justify-between">
+    <h1 class="text-2xl font-semibold">Medições</h1>
+    <a href="{% url 'measurements:create' %}"><c-button>Nova medição</c-button></a>
+  </div>
+
+  <c-card class="mb-6">
+    <c-card.content class="pt-6">
+      <form method="get" class="flex flex-wrap items-end gap-4">
+        <div class="flex flex-col gap-1.5">
+          <label for="{{ filter_form.date_from.id_for_label }}" class="text-sm font-medium">{{ filter_form.date_from.label }}</label>
+          {{ filter_form.date_from }}
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label for="{{ filter_form.date_to.id_for_label }}" class="text-sm font-medium">{{ filter_form.date_to.label }}</label>
+          {{ filter_form.date_to }}
+        </div>
+        <c-button type="submit" variant="secondary">Filtrar</c-button>
+      </form>
+    </c-card.content>
+  </c-card>
+
+  <c-card>
+    <c-table>
+      <c-table.header>
+        <c-table.row>
+          <c-table.head>Data</c-table.head>
+          <c-table.head>Peso</c-table.head>
+          <c-table.head>% Gordura</c-table.head>
+          <c-table.head>Método</c-table.head>
+          <c-table.head></c-table.head>
+        </c-table.row>
+      </c-table.header>
+      <tbody>
+        {% for m in page_obj %}
+          <c-table.row>
+            <c-table.cell>
+              <a href="{% url 'measurements:detail' m.pk %}" class="font-medium text-primary hover:underline">{{ m.measurement_date }}</a>
+            </c-table.cell>
+            <c-table.cell>{{ m.weight }} kg</c-table.cell>
+            <c-table.cell>{{ m.body_fat_percentage|default:"—" }}</c-table.cell>
+            <c-table.cell>
+              {% if m.body_fat_method %}<c-badge variant="secondary">{{ m.get_body_fat_method_display }}</c-badge>{% else %}—{% endif %}
+            </c-table.cell>
+            <c-table.cell>
+              <a href="{% url 'measurements:edit' m.pk %}" class="text-sm text-muted-foreground hover:text-foreground">Editar</a>
+            </c-table.cell>
+          </c-table.row>
+        {% empty %}
+          <c-table.row>
+            <c-table.cell class="text-center text-muted-foreground" colspan="5">Nenhuma medição registrada ainda.</c-table.cell>
+          </c-table.row>
+        {% endfor %}
+      </tbody>
+    </c-table>
+  </c-card>
+
+  {% if page_obj.has_other_pages %}
+    <div class="mt-4 flex items-center justify-center gap-4 text-sm">
+      {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}" class="text-primary hover:underline">Anterior</a>
+      {% endif %}
+      <span class="text-muted-foreground">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="text-primary hover:underline">Próxima</a>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endblock %}

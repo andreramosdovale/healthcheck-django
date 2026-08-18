@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Editar perfil{% endblock %}
+{% block content %}
+  <div class="mx-auto max-w-lg">
+    <c-card>
+      <c-card.header>
+        <c-card.title>Editar perfil</c-card.title>
+        <c-card.description>Apenas nome e altura podem ser alterados por aqui (email/nickname/senha ainda não têm fluxo de troca).</c-card.description>
+      </c-card.header>
+      <c-card.content>
+        <form method="post" novalidate class="flex flex-col gap-4">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="flex flex-col gap-1.5">
+              <label for="{{ field.id_for_label }}" class="text-sm font-medium">{{ field.label }}</label>
+              {{ field }}
+              {% if field.errors %}<p class="text-sm text-destructive">{{ field.errors|join:" " }}</p>{% endif %}
+            </div>
+          {% endfor %}
+          <c-button type="submit" class="w-full">Salvar</c-button>
+        </form>
+      </c-card.content>
+    </c-card>
+  </div>
+{% endblock %}

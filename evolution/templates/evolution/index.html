@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Evolução{% endblock %}
+{% block content %}
+  <h1 class="mb-6 text-2xl font-semibold">Evolução</h1>
+
+  {% if latest %}
+    <c-card class="mb-6">
+      <c-card.header><c-card.title>Última medição</c-card.title></c-card.header>
+      <c-card.content class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-muted-foreground">{{ latest.current.measurement_date }}</p>
+          {% if latest.trend_code == "first_measurement" %}
+            <p class="mt-1 text-sm">Esta é sua primeira medição — sem tendência ainda.</p>
+          {% else %}
+            <p class="mt-1 text-sm">
+              Tendência:
+              {% if latest.trend == "improving" %}<c-badge class="bg-success text-success-foreground">{{ latest.trend_code }}</c-badge>
+              {% elif latest.trend == "worsening" %}<c-badge variant="destructive">{{ latest.trend_code }}</c-badge>
+              {% else %}<c-badge variant="secondary">{{ latest.trend_code }}</c-badge>
+              {% endif %}
+            </p>
+          {% endif %}
+        </div>
+        <a href="{% url 'measurements:detail' latest.current.pk %}"><c-button variant="outline" size="sm">Ver detalhes</c-button></a>
+      </c-card.content>
+    </c-card>
+  {% else %}
+    <c-alert class="mb-6">
+      <c-alert.description>
+        Nenhuma medição registrada ainda. <a href="{% url 'measurements:create' %}" class="text-primary hover:underline">Registrar a primeira</a>.
+      </c-alert.description>
+    </c-alert>
+  {% endif %}
+
+  <c-card class="mb-6">
+    <c-card.header class="flex flex-row items-center justify-between">
+      <c-card.title>Gráficos</c-card.title>
+      <select
+        name="range"
+        id="range"
+        class="flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs"
+        hx-get="{% url 'evolution:charts_partial' %}"
+        hx-target="#charts-wrapper"
+        hx-trigger="change"
+      >
+        <optgroup label="Por período">
+          <option value="weeks-4" {% if range_value == "weeks-4" %}selected{% endif %}>Últimas 4 semanas</option>
+          <option value="weeks-12" {% if range_value == "weeks-12" %}selected{% endif %}>Últimas 12 semanas</option>
+          <option value="weeks-26" {% if range_value == "weeks-26" %}selected{% endif %}>Últimas 26 semanas</option>
+          <option value="weeks-52" {% if range_value == "weeks-52" %}selected{% endif %}>Últimas 52 semanas</option>
+        </optgroup>
+        <optgroup label="Por quantidade de medições">
+          <option value="count-3" {% if range_value == "count-3" %}selected{% endif %}>Últimas 3 medições</option>
+          <option value="count-5" {% if range_value == "count-5" %}selected{% endif %}>Últimas 5 medições</option>
+          <option value="count-10" {% if range_value == "count-10" %}selected{% endif %}>Últimas 10 medições</option>
+        </optgroup>
+        <option value="all" {% if range_value == "all" %}selected{% endif %}>Todo o período</option>
+      </select>
+    </c-card.header>
+    <c-card.content>
+      <div id="charts-wrapper" class="grid grid-cols-1 gap-6 md:grid-cols-2">
+        {% include "evolution/_charts.html" %}
+      </div>
+    </c-card.content>
+  </c-card>
+
+  <a href="{% url 'evolution:compare' %}"><c-button variant="outline">Comparar duas medições</c-button></a>
+{% endblock %}

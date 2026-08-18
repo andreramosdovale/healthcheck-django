@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Medição de {{ measurement.measurement_date }}{% endblock %}
+{% block content %}
+  <div class="mb-6 flex items-center justify-between">
+    <h1 class="text-2xl font-semibold">Medição de {{ measurement.measurement_date }}</h1>
+    <div class="flex gap-2">
+      <a href="{% url 'measurements:edit' measurement.pk %}"><c-button variant="outline">Editar</c-button></a>
+      <form method="post" action="{% url 'measurements:delete' measurement.pk %}">
+        {% csrf_token %}
+        <c-button type="submit" variant="destructive" x-data @click.prevent="if(confirm('Excluir esta medição?')) $el.closest('form').submit()">Excluir</c-button>
+      </form>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+    <c-card>
+      <c-card.header><c-card.title>Composição corporal</c-card.title></c-card.header>
+      <c-card.content>
+        <dl class="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
+          <dt class="text-muted-foreground">Peso</dt><dd>{{ measurement.weight }} kg</dd>
+          <dt class="text-muted-foreground">% Gordura</dt>
+          <dd>
+            {{ measurement.body_fat_percentage|default:"—" }}
+            {% if measurement.body_fat_method %}<c-badge variant="secondary">{{ measurement.get_body_fat_method_display }}</c-badge>{% endif %}
+          </dd>
+          <dt class="text-muted-foreground">Massa magra</dt><dd>{{ measurement.lean_mass|default:"—" }} kg</dd>
+          <dt class="text-muted-foreground">Massa gorda</dt><dd>{{ measurement.fat_mass|default:"—" }} kg</dd>
+          <dt class="text-muted-foreground">% Massa magra</dt><dd>{{ measurement.lean_mass_percentage|default:"—" }}</dd>
+          {% with whr=measurement.waist_hip_ratio %}
+            {% if whr %}
+              <dt class="text-muted-foreground">Cintura/Quadril</dt>
+              <dd>
+                {{ whr.value }}
+                {% if whr.risk == "low" %}<c-badge class="bg-success text-success-foreground">risco baixo</c-badge>
+                {% elif whr.risk == "moderate" %}<c-badge class="bg-warning text-warning-foreground">risco moderado</c-badge>
+                {% elif whr.risk == "high" %}<c-badge variant="destructive">risco alto</c-badge>
+                {% endif %}
+              </dd>
+            {% endif %}
+          {% endwith %}
+        </dl>
+      </c-card.content>
+    </c-card>
+
+    <c-card>
+      <c-card.header><c-card.title>Variação vs. medição anterior</c-card.title></c-card.header>
+      <c-card.content>
+        <div hx-get="{% url 'evolution:delta_partial' measurement.pk %}" hx-trigger="load" hx-swap="innerHTML" class="text-sm text-muted-foreground">
+          Carregando…
+        </div>
+      </c-card.content>
+    </c-card>
+  </div>
+
+  <p class="mt-6"><a href="{% url 'measurements:list' %}" class="text-sm text-primary hover:underline">← Voltar para a lista</a></p>
+{% endblock %}
